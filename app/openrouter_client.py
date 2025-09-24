@@ -50,12 +50,6 @@ async def stream_chat_completion(
     model: str | None = None,
     **kwargs: Any,
 ) -> AsyncIterator[str]:
-    """
-    Асинхронный генератор токенов (delta) из stream-ответа.
-    Пример использования:
-        async for token in stream_chat_completion(msgs):
-            ...
-    """
     stream = await client.chat.completions.create(
         model=model or settings.OPENROUTER_MODEL,
         messages=messages,
@@ -63,7 +57,6 @@ async def stream_chat_completion(
         **kwargs,
     )
     async for event in stream:
-        # у openai>=1.x дельты лежат в event.choices[0].delta.content
         for c in event.choices:
             delta = getattr(c, "delta", None)
             if delta and getattr(delta, "content", None):
